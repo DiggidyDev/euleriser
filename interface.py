@@ -2,7 +2,6 @@ from PIL import Image, ImageDraw
 
 
 im = Image.new(mode="1", size=(256, 256), color=1)
-im.save(fp="im.png")
 
 
 def add_node(count: int):
