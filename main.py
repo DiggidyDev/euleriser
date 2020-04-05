@@ -4,8 +4,24 @@ class Graph:
         self.current_node = 1
         self.nodes = nodes
         self.odd_nodes = []
-        self.paths = {k: [] for k in range(1, nodes + 1)}
+        self.paths = {k + 1: [] for k in range(nodes)}
         self.previous_node = None
+        self.travelled = {k + 1: [] for k in range(nodes)}
+
+    # MOVE TO GRAPHICAL INTERFACE?
+    def _dfs(self, start):
+        for neighbour in self.paths[start]:
+            if neighbour not in self.travelled[start]:
+                self.previous_node = self.current_node
+                self.current_node = neighbour
+
+                self.travelled[self.current_node].append(self.previous_node)
+                self.travelled[self.previous_node].append(self.current_node)
+
+                print(f"{self.previous_node} -> {self.current_node}")
+                self._dfs(self.current_node)
+        for node in self.travelled.values():
+            node.sort()
 
     def add_path(self, start, end):
         """
@@ -15,6 +31,7 @@ class Graph:
         :param end:
         :return:
         """
+
         if not (0 < start <= self.nodes) or not (0 < start <= self.nodes):
             raise IndexError(f"Please provide valid values between the lower and upper bounds, inclusively: (1-{self.nodes})")
 
@@ -45,16 +62,9 @@ class Graph:
         else:
             graph_type = "Invalid graph type"
 
-        print(f"Node quantity : {self.nodes} ({'Even' if self.nodes % 2 == 0 else 'Odd'})")
-        print(f"Odd nodes     : {', '.join(self.odd_nodes)}")
+        print(f"Node quantity : {self.nodes}      ({'Even' if self.nodes % 2 == 0 else 'Odd'})")
+        print(f"Odd nodes     : {', '.join(self.odd_nodes)}   (Possible starting points)")
         print(f"Graph type    : {graph_type}")
-
-    def node_links(self, node=None):
-        if node is None:
-            node = self.current_node
-        print(f"'Vertex {node}' has {len(self.paths[node])} linked nodes: {', '.join([str(v) for v in self.paths[node]])}")
-
-        return self.paths[node]
 
     def del_path(self, start, end):
         """
@@ -77,8 +87,20 @@ class Graph:
         except KeyError:
             raise KeyError(f"Vertices {start} and {end} are not linked.")
 
-    def start_journey(self, start):
-        pass
+    def node_links(self, node=None):
+        if node is None:
+            node = self.current_node
+        print(f"'Vertex {node}' has {len(self.paths[node])} linked nodes: {', '.join([str(v) for v in self.paths[node]])}")
+
+        return self.paths[node]
+
+    def search(self, start):
+        self.current_node = start
+        self._dfs(start)
+        if self.travelled == self.paths:
+            print("Solved!")
+        else:
+            print("Not possible from this position!")
 
 
 graph = Graph(4)
@@ -89,3 +111,4 @@ graph.add_path(2, 4)
 graph.add_path(3, 4)
 
 graph.analysis()
+graph.search(3)  # EDIT THE STARTING NODE HERE!
