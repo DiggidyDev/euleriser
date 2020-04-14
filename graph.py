@@ -44,8 +44,8 @@ class Graph:
         h = self.interface.dimensions[1]
 
         for count in range(1, self.node_count + 1):
-            x = ((count % 2) + 1) * w / (self.node_count / 1.5)
-            y = ((count % 2) + (count % 3)) * h / (self.node_count / 1.5)
+            x = ((count % 2) + 1) * w / (self.node_count / 1.35)
+            y = ((count % 2) + (count % 3)) * h / (self.node_count / 1.35)
             self.image = self.interface.draw_node(self.get_node(count), (x, y), 20)
 
         self.image.show()
@@ -60,28 +60,42 @@ class Graph:
         :return:
         """
 
-        return
+        for neighbour in self.paths[self.current_node.identifier]:
+            if neighbour not in self.travelled[self.current_node.identifier] and not self.paths == self.travelled:
+                solution.append(self.current_node.identifier)
 
-    def add_path(self, start_node, end_node):
+                self.previous_node = self.current_node
+                self.current_node = self.get_node(neighbour)
+
+                self.travelled[self.current_node.identifier].append(self.previous_node.identifier)
+                self.travelled[self.previous_node.identifier].append(self.current_node.identifier)
+
+                self._dfs(solution)
+
+        for node in self.travelled.values():
+            node.sort()
+
+        return solution
+
+    def add_path(self, start, end):
         """
         Creates a path between two defined nodes, start and end.
 
-        :param start_node:
-        :param end_node:
+        :param start:
+        :param end:
         :return:
         """
 
-        if not (0 < start_node <= self.node_count) or not (0 < start_node <= self.node_count):
+        if not (0 < start <= self.node_count) or not (0 < start <= self.node_count):
             raise IndexError(f"Please provide valid values between the lower and upper bounds, inclusively: (1-{self.node_count})")
 
         try:
-            start_node = self.get_node(start_node)
-            end_node = self.get_node(end_node)
+            start_node = self.get_node(start)
+            end_node = self.get_node(end)
 
             start_node.connect_to(end_node)
-            end_node.connect_to(start_node)
 
-            self.image = self.interface.draw_path(start_node.centre, end_node.centre)
+            self.image = self.interface.draw_path(start_node.centre, end_node.centre, action="add")
 
             self.path_count += 1
         except Exception as e:
@@ -120,14 +134,16 @@ class Graph:
             raise IndexError(f"Please provide valid values between the lower and upper bounds, inclusively: (1-{self.nodes})")
 
         try:
-            del self.paths[start][self.paths[start].index(end)]
-        except KeyError:
-            raise KeyError(f"Nodes {start} and {end} are not linked.")
+            start_node = self.get_node(start)
+            end_node = self.get_node(end)
 
-        try:
-            del self.paths[end][self.paths[end].index(start)]
-        except KeyError:
-            raise KeyError(f"Nodes {start} and {end} are not linked.")
+            start_node.disconnect_from(end_node)
+
+            self.image = self.interface.draw_path(start_node.centre, end_node.centre, action="remove")
+
+            self.path_count -= 1
+        except Exception as e:
+            print(f"{type(e).__name__}: {e}")
 
     def get_node(self, identifier):
         for node in self.nodes:
@@ -147,9 +163,10 @@ class Graph:
         h = self.interface.dimensions[1]
 
         for count in range(1, self.node_count + 1):
-            x = ((count % 2) + 1) * w / (self.node_count / 1.5)
-            y = ((count % 2) + (count % 3)) * h / (self.node_count / 1.5)
-            self.get_node(count).set_position(x, y, 20)
+
+            x = ((count % 2) + 1) * w / (self.node_count / 1.35)
+            y = ((count % 2) + (count % 3)) * h / (self.node_count / 1.35)
+            self.get_node(count).set_position(x, y)
 
         return self.interface
 
@@ -166,13 +183,11 @@ class Graph:
         else:
             self.current_node = start
         solve_order = ' -> '.join([str(node) for node in self._dfs([])])
+        solve_order += f" -> {self.current_node.identifier}"
 
         for node in self.travelled.values():
             node.sort()
 
-        print(self.travelled)
-        print(self.paths)
-        print(solve_order)
         if self.travelled == self.paths:
             print(f"Solved!\n{solve_order}")
         else:
