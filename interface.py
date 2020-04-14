@@ -12,22 +12,26 @@ class Interface:
 
     def draw_node(self, node: "Node object", centre, radius):
 
-        node.set_position(centre[0], centre[1], radius)
+        node.set_position(centre[0], centre[1])
+        node.set_radius(radius)
         identifier = node.identifier
 
-        ellipse_pos = ((identifier - 1) * 30, (identifier - 1) * 30, identifier * 30, identifier * 30)
         self.draw.ellipse(node.border_positions, 255, outline=0)
 
-        text_pos = ((identifier - 1) * 30 + 13, (identifier * 30) - 20)
-        self.draw.text(node.centre, f"{identifier}", align="left")
+        text_pos = ((node.centre[0]) - (node.radius/16), (node.centre[1]) - (node.radius/4))
+        self.draw.text(text_pos, f"{identifier}", align="left")
 
         return self.image
 
-    def draw_path(self, pos1: "Node object", pos2: "Node object"):
+    def draw_path(self, pos1: "Node object", pos2: "Node object", action=None):
 
         line_pos = (pos1[0], pos1[1], pos2[0], pos2[1])
-        print(line_pos)
 
-        self.draw.line(line_pos, fill=0, width=3, joint="curve")
+        if action == "remove":
+            self.draw.line(line_pos, fill=255, width=3, joint="curve")
+        elif action == "add":
+            self.draw.line(line_pos, fill=0, width=3, joint="curve")
+        else:
+            raise NameError("Action does not exist. Please use actions: \"add\" or \"remove\".")
 
         return self.image
