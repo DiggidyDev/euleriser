@@ -1,5 +1,6 @@
 from graph import Graph
 
+
 graph = Graph(4)  # INITIALISE THE GRAPH SIZE HERE
 gui = graph.init_gui()
 
