@@ -16,27 +16,34 @@ class Node:
         return (self.centre[0] - self.radius, self.centre[1] - self.radius), (self.centre[0] + self.radius, self.centre[1] + self.radius)
 
     def connect_to(self, node: "Node object"):
-        if node.identifier not in self.connections:
+        if node.identifier not in self.connections and self.identifier not in node.connections:
             self.connections.append(node.identifier)
+            node.connections.append(self.identifier)
         else:
             raise PermissionError(f"Path connection already exists between nodes {self.identifier} and {node.identifier}")
 
     def disconnect_from(self, node: "Node object"):
-        if node.identifier in self.connections:
-            self.connections.pop(self.connections.index(node))
+        if node.identifier in self.connections and self.identifier in node.connections:
+            self.connections.pop(self.connections.index(node.identifier))
+            node.connections.pop(node.connections.index(self.identifier))
         else:
             raise PermissionError(f"No initial path connection found between nodes {self.identifier} and {node.identifier}")
 
-    def set_position(self, x, y, r):
+    def set_position(self, x, y):
         """
-        Sets the centre position and radius of the node.
+        Sets the centre position of the node.
 
         :param x:
         :param y:
-        :param r:
         :return:
         """
         self.centre = (x, y)
-        self.radius = r
 
-        return
+    def set_radius(self, r):
+        """
+        Sets radius of the node.
+
+        :param r:
+        :return:
+        """
+        self.radius = r
