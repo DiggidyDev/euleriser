@@ -12,3 +12,5 @@ graph.analysis()
 
 print(graph.search(graph.get_node(3)))  # EDIT THE STARTING NODE HERE!
 print(type(graph.node_links(2)))
+
+print(graph)
