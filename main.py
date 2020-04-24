@@ -10,5 +10,5 @@ graph.add_path(3, 4)
 
 graph.analysis()
 
-graph.search(graph.get_node(3))  # EDIT THE STARTING NODE HERE!
-print(graph)
+print(graph.search(graph.get_node(3)))  # EDIT THE STARTING NODE HERE!
+print(type(graph.node_links(2)))

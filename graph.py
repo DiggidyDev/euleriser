@@ -1,12 +1,33 @@
 from interface import Interface
 from node import Node
 
-import numpy as np
+__author__ = "DiggidyDev"
+
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "DiggidyDev"
+__email__ = "35506546+DiggidyDev@users.noreply.github.com"
+__status__ = "Development"
 
 
 class Graph:
+    """
+    Graph is an object which represents a series of nodes, their
+    connections and identifiers. It is used for Eulerian-style graphs
+    and is capable of solving them using a Depth-First Search algorithm
+    with the hope of implementing a real-time visualisation of said
+    solution in the future.
+
+    It is currently still under development, but is hopefully going to
+    serve some sort of use in the future.
+    """
 
     def __init__(self, nodes: int = None):
+        """
+        Default initialisation function.
+
+        :param nodes:
+        """
         self.current_node = None
         self.image = None
         self.interface = None
@@ -18,10 +39,21 @@ class Graph:
 
     @property
     def node_count(self):
+        """
+        Returns the number of nodes in the graph, connected or not.
+
+        :return:
+        """
         return len(self.travelled.keys())
 
     @property
     def paths(self):
+        """
+        Returns a dict containing all paths as keys, and their
+        connected nodes (see self.node_links) as the values.
+
+        :return:
+        """
         return {k: c.connections for k, c in enumerate(self.nodes, 1)}
 
     def __len__(self):
@@ -34,7 +66,7 @@ class Graph:
 
     def __str__(self):
         """
-        Shows graph in image when printed.
+        Shows graph as an image.
         Used to visualise the nodes and paths.
 
         :return:
@@ -53,7 +85,8 @@ class Graph:
 
     def _dfs(self, solution):
         """
-        Performs a depth-first search on the graph from a given starting position.
+        Performs a depth-first search on the graph from a set
+        starting position.
         Returns a list containing the solution.
 
         :param solution:
@@ -79,7 +112,8 @@ class Graph:
 
     def add_path(self, start, end):
         """
-        Creates a path between two defined nodes, start and end.
+        Creates and draws a path between two defined nodes, start and
+        end.
 
         :param start:
         :param end:
@@ -103,8 +137,10 @@ class Graph:
 
     def analysis(self):
         """
-        Analyses the graph for the number of nodes, number of odd, even nodes,
-        whether it's Eulerian, semi-Eulerian or invalid.
+        Analyses the graph for the number of nodes, number of odd, even
+        nodes, whether it's Eulerian, semi-Eulerian or invalid.
+        In future will also highlight the path in real-time for the
+        solution to the graph.
 
         :return:
         """
@@ -125,6 +161,7 @@ class Graph:
     def del_path(self, start, end):
         """
         Deletes a path between two defined nodes, start and end.
+        This will both conceptually and visually delete said path.
 
         :param start:
         :param end:
@@ -146,11 +183,23 @@ class Graph:
             print(f"{type(e).__name__}: {e}")
 
     def get_node(self, identifier):
+        """
+        Returns the node object from the given identifier.
+        For when you wish to interact with a node.
+
+        :param identifier:
+        :return:
+        """
         for node in self.nodes:
             if identifier == node.identifier:
                 return node
 
     def init_gui(self):
+        """
+        Initialises the Interface object, enabling drawing.
+
+        :return:
+        """
         gui = Interface(self.node_count)
         self.interface = gui
 
@@ -171,6 +220,12 @@ class Graph:
         return self.interface
 
     def node_links(self, node=None):
+        """
+        Returns the connecting nodes from a given node as a list.
+
+        :param node:
+        :return:
+        """
         if node is None:
             node = self.current_node
         print(f"'Node {node}' has {len(self.paths[node])} linked nodes: {', '.join([str(v) for v in self.paths[node]])}")
@@ -178,6 +233,14 @@ class Graph:
         return self.paths[node]
 
     def search(self, start):
+        """
+        Runs the depth-first search algorithm, returning the validity
+        of the graph, and route if valid.
+
+        :param start:
+        :return:
+        """
+
         if not isinstance(start, Node):
             self.current_node = self.get_node(start)
         else:
