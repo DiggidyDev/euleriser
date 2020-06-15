@@ -1,3 +1,7 @@
+import cv2
+import random
+import numpy as np
+
 from PIL import Image, ImageDraw
 
 
@@ -5,15 +9,16 @@ class Interface:
 
     def __init__(self, node_count):
 
-        self.dimensions = (64*(node_count+1), 36*(node_count+1))
+        self.dimensions = (64*node_count, 36*node_count)
         self.graph = None
         self.image = Image.new(mode="1", size=self.dimensions, color=1)
         self.draw = ImageDraw.Draw(self.image)
 
-    def draw_node(self, node: "Node object", centre, radius):
+    def draw_node(self, node: "Node object", centre, radius=None):
 
         node.set_position(centre[0], centre[1])
-        node.set_radius(radius)
+        if radius:
+            node.set_radius(radius)
         identifier = node.identifier
 
         self.draw.ellipse(node.border_positions, 255, outline=0)
