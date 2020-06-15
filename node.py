@@ -39,20 +39,21 @@ class Node:
         else:
             raise PermissionError(f"No initial path connection found between nodes {self.identifier} and {node.identifier}")
 
-    def distance_from(self, node: "Node object"=None):
+    def distance_from(self, identifier: "Node identifier"=None):
         """
         Gets the distance (in pixels) between the node this method is being called from
         and a target node.
         :param node:
         :return:
         """
-        if isinstance(node, Node):
+        try:
+            node = self.interface.graph.get_node(identifier)
             return math.sqrt((self.x-node.x)**2 + (self.y-node.y)**2)
-        else:
+        except:
             return min([v for k, v in self.get_all_distances().items() if k != self.identifier])
 
     def get_all_distances(self):
-        return {k.identifier: self.distance_from(self.interface.graph.get_node(k.identifier)) for k in self.interface.graph.nodes}
+        return {k.identifier: self.distance_from(k.identifier) for k in self.interface.graph.nodes}
 
     def set_position(self, x, y):
         """
