@@ -1,10 +1,12 @@
+import random
+
 from interface import Interface
 from node import Node
 
 __author__ = "DiggidyDev"
 
 __license__ = "MIT"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __maintainer__ = "DiggidyDev"
 __email__ = "35506546+DiggidyDev@users.noreply.github.com"
 __status__ = "Development"
@@ -71,14 +73,8 @@ class Graph:
 
         :return:
         """
-
-        w = self.interface.dimensions[0]
-        h = self.interface.dimensions[1]
-
         for count in range(1, self.node_count + 1):
-            x = ((count % 2) + 1) * w / (self.node_count / 1.35)
-            y = ((count % 2) + (count % 3)) * h / (self.node_count / 1.35)
-            self.image = self.interface.draw_node(self.get_node(count), (x, y), 20)
+            self.image = self.interface.draw_node(self.get_node(count), self.get_node(count).centre, 20)
 
         self.image.show()
         return "Graph successfully loaded!"
@@ -145,6 +141,8 @@ class Graph:
         :return:
         """
 
+        PAD = 14
+
         self.odd_nodes = [str(node) for node in self.paths.keys() if len([c for c in self.paths[node]]) % 2 == 1]
 
         if len(self.odd_nodes) == 2:
@@ -154,9 +152,9 @@ class Graph:
         else:
             graph_type = "Invalid graph type"
 
-        print(f"Nodes         : {self.node_count}      ({'Even' if self.node_count % 2 == 0 else 'Odd'})")
-        print(f"Odd nodes     : {', '.join(self.odd_nodes)}   (Possible starting nodes)")
-        print(f"Graph type    : {graph_type}")
+        print(f"\n{'Nodes':{PAD}}: {self.node_count}      ({'Even' if self.node_count % 2 == 0 else 'Odd'})")
+        print(f"{'Odd nodes':{PAD}}: {', '.join(self.odd_nodes)}   (Possible starting nodes)")
+        print(f"{'Graph type':{PAD}}: {graph_type}\n")
 
     def del_path(self, start, end):
         """
@@ -205,17 +203,19 @@ class Graph:
 
         for i in range(len(self.travelled.keys())):
             node = Node(i + 1, self.interface)
+            node.set_radius(20)
             self.nodes.append(node)
 
         self.interface.graph = self
         w = self.interface.dimensions[0]
         h = self.interface.dimensions[1]
 
-        for count in range(1, self.node_count + 1):
+        for node in range(1, self.node_count + 1):
 
-            x = ((count % 2) + 1) * w / (self.node_count / 1.35)
-            y = ((count % 2) + (count % 3)) * h / (self.node_count / 1.35)
-            self.get_node(count).set_position(x, y)
+            radius = self.get_node(node).radius
+            self.get_node(node).set_position(random.randint(radius, (w - radius)), random.randint(radius, h - radius))
+            while self.get_node(node).distance_from() < radius * 2.5:
+                self.get_node(node).set_position(random.randint(radius, (w - radius)), random.randint(radius, h - radius))
 
         return self.interface
 
