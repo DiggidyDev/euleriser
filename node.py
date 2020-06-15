@@ -1,10 +1,12 @@
+import math
+
 class Node:
 
     def __init__(self, identifier: int, interface: "Interface object"):
         self.connections = []
         self.identifier = identifier
         self.interface = interface
-        self.centre = None
+        self.centre = (0, 0)
         self.radius = None
         self.visits = 0
 
@@ -14,6 +16,14 @@ class Node:
     @property
     def border_positions(self):
         return (self.centre[0] - self.radius, self.centre[1] - self.radius), (self.centre[0] + self.radius, self.centre[1] + self.radius)
+
+    @property
+    def x(self):
+        return self.centre[0]
+
+    @property
+    def y(self):
+        return self.centre[1]
 
     def connect_to(self, node: "Node object"):
         if node.identifier not in self.connections and self.identifier not in node.connections:
@@ -28,6 +38,21 @@ class Node:
             node.connections.pop(node.connections.index(self.identifier))
         else:
             raise PermissionError(f"No initial path connection found between nodes {self.identifier} and {node.identifier}")
+
+    def distance_from(self, node: "Node object"=None):
+        """
+        Gets the distance (in pixels) between the node this method is being called from
+        and a target node.
+        :param node:
+        :return:
+        """
+        if isinstance(node, Node):
+            return math.sqrt((self.x-node.x)**2 + (self.y-node.y)**2)
+        else:
+            return min([v for k, v in self.get_all_distances().items() if k != self.identifier])
+
+    def get_all_distances(self):
+        return {k.identifier: self.distance_from(self.interface.graph.get_node(k.identifier)) for k in self.interface.graph.nodes}
 
     def set_position(self, x, y):
         """
