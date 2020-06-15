@@ -8,9 +8,12 @@ graph.add_path(1, 4)
 graph.add_path(2, 4)
 graph.add_path(3, 4)
 
+print(graph.get_node(4).get_all_distances()) # Returns dictionary with all node identifiers and their respective distances
+print(graph.get_node(4).distance_from(2)) # Returns distance between two nodes, or minimum distance if left blank
+print(graph.get_node(4).distance_from())
+
 graph.analysis()
 
-print(graph.search(graph.get_node(3)))  # EDIT THE STARTING NODE HERE!
-print(type(graph.node_links(2)))
+graph.search(graph.get_node(3))  # EDIT THE STARTING NODE HERE!
 
 print(graph)
